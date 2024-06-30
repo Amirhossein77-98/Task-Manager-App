@@ -7,11 +7,11 @@ from future.moves import configparser
 def main():
     try:
         config = configparser.ConfigParser()
-        config.read('config.ini')
+        config.read('Python\config.ini')
         host = config.get("DB", "host")
         database = config.get("DB", "database")
         user = config.get("DB", "user")
-        password = config.get("DB", "password")
+        password = config.get("DB", "pass")
 
         db_manager = MySQLConnctionManager(host=host, database=database, user=user, password=password)
         
