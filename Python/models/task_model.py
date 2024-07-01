@@ -1,5 +1,6 @@
 from mysql.connector import Error
 from datetime import datetime
+from views.task_view import TaskView
 
 
 class TaskRepository:
@@ -23,6 +24,7 @@ class TaskRepository:
                         category INT,
                         due_date DATE,
                         user varchar(255) NOT NULL,
+                        status BOOL NOT NULL DEFAULT 0,
                         FOREIGN KEY (category) REFERENCES categories(id),
                         FOREIGN KEY (user) REFERENCES users(username)
                         );""")
@@ -30,7 +32,7 @@ class TaskRepository:
             connection.commit()
             cursor.close()
         except Error as e:
-            print(f"Error while creating database: {e}")
+            print(f"Error while creating table: {e}")
 
     def insert(self, title, category, username, desc='', due=datetime.today):
         print(due)
@@ -39,8 +41,8 @@ class TaskRepository:
         try:
             cursor.execute("INSERT INTO tasks (title, description, category, due_date, user) VALUES (%s, %s, %s, %s, %s)", (title, desc, category, due, username))
             connection.commit()
-            print("Task created successfully")
+            TaskView.task_creation_seccess()
         except Error as e:
-            print(f"Error while creating the task: {e}")
+            TaskView.task_creation_failure(e)
         finally:
             cursor.close()

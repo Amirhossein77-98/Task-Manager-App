@@ -1,4 +1,5 @@
 from models.user_model import User, UserRepository
+from views.user_view import UserView
 
 class UserController:
     def __init__(self, user_repository) -> None:
@@ -10,9 +11,9 @@ class UserController:
 
     def login_user(self, username, password):
         user = self.user_repository.login(username, password)
-        # OBJECT
+        UserView.display_login_result(user)
+        
         if user:
-            print("Logged in successfully")
             return user
         else:
             return None

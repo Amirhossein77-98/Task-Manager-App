@@ -1,4 +1,5 @@
 from mysql.connector import Error
+from views.user_view import UserView
 
 class User:
     def __init__(self, username, password, name) -> None:
@@ -24,7 +25,7 @@ class UserRepository:
             connection.commit()
             cursor.close()
         except Error as e:
-            print(f"Error while creating the table: {e}")
+            UserView.table_creation_error(e)
 
     def read(self, username) -> None | object:
         connection = self._connection_manager.get_connection()
@@ -37,7 +38,7 @@ class UserRepository:
             print("No user found with this username!")
             return None
         except Error as e:
-            print(f"Error while reading the user: {e}")
+            UserView.user_operations_failure("reading", e)
         finally:
             cursor.close()
     
@@ -47,9 +48,9 @@ class UserRepository:
         try:
             cursor.execute("UPDATE users SET username = %s, password = %s, name = %s", (user.username, user.password, user.name))
             connection.commit()
-            print("Successfully updated the user")
+            UserView.user_operations_success("updated")
         except Error as e:
-            print(f"Error while updating the user: {e}")
+            UserView.user_operations_failure("updating", e)
         finally:
             cursor.close()
     
@@ -59,9 +60,9 @@ class UserRepository:
         try:
             cursor.execute("DELETE FROM users WHERE username = %s && password = %s", (username, password))
             connection.commit()
-            print("User deleted successfully.")
+            UserView.user_operations_success("deleted")
         except Error as e:
-            print(f"Error while deleting the user: {e}")
+            UserView.user_operations_failure("deleting", e)
         finally:
             cursor.close()
 
@@ -71,9 +72,9 @@ class UserRepository:
         try:
             cursor.execute("INSERT INTO users (username, password, name) VALUES (%s, %s, %s)", (user.username, user.password, user.name))
             connection.commit()
-            print("You registered successfully!")
+            UserView.user_operations_success("registered")
         except Error as e:
-            print(f"Error while creating the user: {e}")
+            UserView.user_operations_failure("creating", e)
         finally:
             cursor.close()
 
@@ -89,7 +90,7 @@ class UserRepository:
                 print("Invalid email or password")
                 return None
         except Error as e:
-            print(f"Error while logging in user: {e}")
+            UserView.user_operations_failure("logging in", e)
             return None
         finally:
             cursor.close()
