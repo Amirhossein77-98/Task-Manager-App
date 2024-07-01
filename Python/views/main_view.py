@@ -17,5 +17,6 @@ Choose what you want to do:
 3. Update Task
 4. Delete Task
 5. Mark as Done
+6. Exit
 Choose the operation you want: """
         return message

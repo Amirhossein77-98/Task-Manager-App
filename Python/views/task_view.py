@@ -1,19 +1,10 @@
 class TaskView:
     @staticmethod
-    def task_creation_seccess():
-        print("✅ Successfully created the task.")
-    
-    @staticmethod
-    def task_creation_failure(error):
-        print(f"❌ Error while creating the task: {error}")
-
-    @staticmethod
-    def fetch_error(error):
-        print(f"❌ Error while fetching the tasks: {error}")
-    
-    @staticmethod
-    def task_detail_fetch_error(error):
-        print(f"❌ Error while fetching the task's details: {error}")
+    def task_related_operations(operation, title='', error=None):
+        if error:
+            print(f"❌ Error while {operation} the task '{title}'")
+        else:
+            print(f"✅ Successfully {operation} the task '{title}'.")
 
     @staticmethod
     def task_details_view(task_details):

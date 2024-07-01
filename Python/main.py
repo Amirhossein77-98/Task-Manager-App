@@ -24,12 +24,30 @@ def get_required_data_from_user(operation, titles=None):
         title = input("Enter the title: ")
         desc = input("Enter the description: ")
         category = input("Enter the category: ")
-        due_date = input("Enter the date: ")
-        if due_date == '':
-                due_date = datetime.today()
+        while True:
+            try:
+                due_date = input("Enter the date (Format: YYYY-MM-DD) - Leave it blank to set today as due date: ")
+                if due_date == '':
+                        due_date = datetime.today()
+                        break
+                else:
+                    due_date = datetime.strptime(due_date, '%Y-%m-%d')
+                    break
+            except ValueError:
+                print(f"Wrong date format. Please enter a date like this: {datetime.today()}")
+                continue
+
+        return (title, desc, category, due_date.strftime('%Y-%m-%d'))
+    
+    elif operation == 'update_task':
+        print("⚠️ Leave blank the fields you don't want to change ⚠️")
+        title = input("Enter the new title: ")
+        desc = input("Enter the new description: ")
+        category = input("Enter the new category: ")
+        due_date = input("Enter the new date (Format: YYYY-MM-DD): ")
         return (title, desc, category, due_date)
     
-    elif operation == 'view_task_detail':
+    elif operation == 'choose_task':
         while True:
             try:
                 task_title = input("Enter the task title that you want to see its details: ").lower()
@@ -38,6 +56,7 @@ def get_required_data_from_user(operation, titles=None):
                 return task_title
             except ValueError as e:
                 print(f"Couldn't find {task_title} in your tasks! Try again.")
+                continue
 
 def main():
     try:
@@ -73,23 +92,51 @@ def main():
                 continue
     
         user_tasks = task_controller.fetch_tasks_titles(user.username)
-        print("Here are your tasks:")
-        for num, task in enumerate(user_tasks):
-            print(f"{num+1}. {task}")
 
-
-        operation = input(MainView.operation_menu())
-        
-        if operation == '1':
-            new_task_detail = get_required_data_from_user('new_task')
-            task_controller.new_task(title=new_task_detail[0],
-                                     desc=new_task_detail[1],
-                                     category=new_task_detail[2],
-                                     due_date=new_task_detail[3],
-                                     username=user.username)
-        if operation == '2':
-            task_to_view = get_required_data_from_user('view_task_detail', user_tasks)
-            task_details = task_controller.fetch_task_details(user.username, task_to_view)
+        while True:
+            print("Here are your tasks:")
+            for num, task in enumerate(user_tasks):
+                print(f"{num+1}. {task}")
+                
+            operation = input(MainView.operation_menu())
+            
+            if operation == '1':
+                new_task_detail = get_required_data_from_user('new_task')
+                task_controller.new_task(title=new_task_detail[0],
+                                        desc=new_task_detail[1],
+                                        category=new_task_detail[2],
+                                        due_date=new_task_detail[3],
+                                        username=user.username)
+            elif operation == '2':
+                task_to_view = get_required_data_from_user('choose_task', user_tasks)
+                task_controller.fetch_task_details(user.username, task_to_view)
+            
+            elif operation == '3':
+                task_to_update = get_required_data_from_user('choose_task', user_tasks)
+                task_detail = task_controller.fetch_task_details(user.username, task_to_update)
+                update = get_required_data_from_user('update_task')
+                if update[0] != '':
+                    task_detail['title'] = update[0]
+                if update[1] != '':
+                    task_detail['description'] = update[1]
+                if update[2] != '':
+                    task_detail['category'] = update[2]
+                if update[3] != '':
+                    task_detail['due_date'] = update[3].strftime('%Y-%m-%d')
+                else:
+                    task_detail['due_date'] = task_detail['due_date'].strftime('%Y-%m-%d')
+                
+                print(task_to_update)
+                task_controller.update_task(task_detail, user.username, task_to_update)
+            
+            elif operation == '4':
+                task_to_delete = get_required_data_from_user('choose_task', user_tasks)
+                task_detail = task_controller.fetch_task_details(user.username, task_to_delete)
+                confirmation = input(f"Are you sure you want to delete {task_to_delete} (y/n)? ").lower()
+                task_controller.delete_task(task_to_delete, user.username) if confirmation == "y" else print("Operation Canceled.")
+            
+            elif operation.lower() == "exit" or operation == "6":
+                break
 
     except Error as e:
         print(f"Error while connecting to database: {e}")
