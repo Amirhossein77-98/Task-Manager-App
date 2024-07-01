@@ -1,7 +1,4 @@
 class MainView:
-    @staticmethod
-    def main_menu():
-        pass
 
     @staticmethod
     def authentication():

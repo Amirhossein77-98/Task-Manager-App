@@ -46,3 +46,28 @@ class TaskRepository:
             TaskView.task_creation_failure(e)
         finally:
             cursor.close()
+    
+    def fetch_tasks(self, username) -> tuple | None:
+        connection = self._connection_manager.get_connection()
+        cursor = connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM tasks WHERE user = %s", (username,))
+            result = cursor.fetchall()
+            return result
+        except Error as e:
+            TaskView.fetch_error(e)
+            return None
+        finally:
+            cursor.close()
+
+    def fetch_task_details(self, username, title):
+        connection = self._connection_manager.get_connection()
+        cursor = connection.cursor()
+        try:
+            cursor.execute("SELECT * FROM tasks WHERE title = %s AND user = %s", (title, username))
+            result = cursor.fetchone()
+            return {'title': result[1], 'description': result[2], 'category': result[3], 'due_date': result[4], 'status': result[6]}
+        except Error as e:
+            TaskView.task_detail_fetch_error(e)
+        finally:
+            cursor.close()

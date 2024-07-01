@@ -1,5 +1,5 @@
 from database.db_manager import MySQLConnctionManager
-from models.user_model import User, UserRepository
+from models.user_model import UserRepository
 from mysql.connector import Error
 from controllers.user_controller import UserController
 from future.moves import configparser
@@ -8,7 +8,7 @@ from datetime import datetime
 from views.main_view import MainView
 from controllers.task_controller import TaskController
 
-def get_required_data_from_user(operation):
+def get_required_data_from_user(operation, titles=None):
     if operation == 'login':
         username = input("Please enter your username: ")
         password = input("Please enter your password: ")
@@ -28,6 +28,16 @@ def get_required_data_from_user(operation):
         if due_date == '':
                 due_date = datetime.today()
         return (title, desc, category, due_date)
+    
+    elif operation == 'view_task_detail':
+        while True:
+            try:
+                task_title = input("Enter the task title that you want to see its details: ").lower()
+                if task_title not in [title.lower() for title in titles]:
+                    raise ValueError
+                return task_title
+            except ValueError as e:
+                print(f"Couldn't find {task_title} in your tasks! Try again.")
 
 def main():
     try:
@@ -62,7 +72,11 @@ def main():
                 print("Invalid choice! Please enter 1 or 2.")
                 continue
     
-        print("Here are your tasks")
+        user_tasks = task_controller.fetch_tasks_titles(user.username)
+        print("Here are your tasks:")
+        for num, task in enumerate(user_tasks):
+            print(f"{num+1}. {task}")
+
 
         operation = input(MainView.operation_menu())
         
@@ -73,6 +87,9 @@ def main():
                                      category=new_task_detail[2],
                                      due_date=new_task_detail[3],
                                      username=user.username)
+        if operation == '2':
+            task_to_view = get_required_data_from_user('view_task_detail', user_tasks)
+            task_details = task_controller.fetch_task_details(user.username, task_to_view)
 
     except Error as e:
         print(f"Error while connecting to database: {e}")
