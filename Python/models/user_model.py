@@ -22,6 +22,7 @@ class UserRepository:
                             PRIMARY KEY (username)
                             );""")
             connection.commit()
+            cursor.close()
         except Error as e:
             print(f"Error while creating the table: {e}")
 

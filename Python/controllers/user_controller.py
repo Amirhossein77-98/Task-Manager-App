@@ -10,5 +10,9 @@ class UserController:
 
     def login_user(self, username, password):
         user = self.user_repository.login(username, password)
+        # OBJECT
         if user:
             print("Logged in successfully")
+            return user
+        else:
+            return None
