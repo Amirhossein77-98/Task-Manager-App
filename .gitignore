@@ -2,3 +2,6 @@ Python\venv
 venv
 __pycache__
 config.ini
+.env
+node_modules
+package-lock.json
