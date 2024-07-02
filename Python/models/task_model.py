@@ -15,7 +15,8 @@ class TaskRepository:
             cursor.execute("""CREATE TABLE IF NOT EXISTS categories(
                         id INT PRIMARY KEY AUTO_INCREMENT,
                         title varchar(255) NOT NULL,
-                        description varchar(255)
+                        description varchar(255),
+                        UNIQUE(title)
                         );""")
             cursor.execute("""CREATE TABLE IF NOT EXISTS tasks(
                         id INT PRIMARY KEY AUTO_INCREMENT,
@@ -28,7 +29,11 @@ class TaskRepository:
                         FOREIGN KEY (category) REFERENCES categories(id),
                         FOREIGN KEY (user) REFERENCES users(username)
                         );""")
-            cursor.execute("INSERT INTO categories (title, description) VALUES (%s, %s)", ('Urgent', 'Urgent Tasks'))
+            try:
+                cursor.execute("INSERT IGNORE INTO categories (title, description) VALUES (%s, %s)", ('Urgent', 'Urgent Tasks'))
+                cursor.execute("INSERT IGNORE INTO categories (title, description) VALUES (%s, %s)", ('Important', 'Important Tasks'))
+            except Error:
+                pass
             connection.commit()
             cursor.close()
         except Error as e:
@@ -63,10 +68,15 @@ class TaskRepository:
         connection = self._connection_manager.get_connection()
         cursor = connection.cursor()
         try:
-            cursor.execute("SELECT * FROM tasks WHERE title = %s AND user = %s", (title, username))
+            cursor.execute("""
+                            SELECT tasks.id, tasks.title, tasks.description, categories.title as category_name, tasks.due_date, tasks.status
+                            FROM tasks
+                            JOIN categories ON tasks.category = categories.id
+                            WHERE tasks.title = %s AND tasks.user = %s
+                            """, (title, username))
             result = cursor.fetchone()
             if result:
-                return {'title': result[1], 'description': result[2], 'category': result[3], 'due_date': result[4], 'status': result[6]}
+                return {'title': result[1], 'description': result[2], 'category': result[3], 'due_date': result[4], 'status': result[5]}
             else:
                 raise Error
         except Error as e:
@@ -97,6 +107,18 @@ class TaskRepository:
         cursor = connection.cursor()
         try:
             cursor.execute("DELETE FROM tasks WHERE title = %s AND user = %s", (title, username))
+            connection.commit()
+            return (True, '')
+        except Error as e:
+            return False, e
+        finally:
+            cursor.close()
+
+    def mark_done_task(self, title, username):
+        connection = self._connection_manager.get_connection()
+        cursor = connection.cursor()
+        try:
+            cursor.execute("UPDATE tasks SET status = 1 WHERE title = %s AND user = %s", (title, username))
             connection.commit()
             return (True, '')
         except Error as e:

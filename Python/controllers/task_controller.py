@@ -11,12 +11,14 @@ class TaskController:
         else:
             TaskView.task_related_operations('creation', title, error=new_task_creation[1])
 
-    def fetch_tasks_titles(self, username) -> tuple | None:
+    def fetch_tasks_titles(self, username) -> list | None:
         tasks = self.task_repository.fetch_tasks(username)
-        if tasks or tasks[0]:
+        if tasks == []:
+            return None
+        elif tasks != [] and tasks[0] != False:
             titles = []
             for task in tasks:
-                titles.append(task[1])
+                titles.append((task[1], "✅Done" if task[6] == 1 else "❌Undone"))
             return titles
         TaskView.task_related_operations('fetching', error=tasks[1])
         return None
@@ -42,3 +44,10 @@ class TaskController:
             TaskView.task_related_operations("deleted", title)
         else:
             TaskView.task_related_operations("deleting", title, error=deleted[1])
+
+    def mark_done(self, title, username):
+        marked = self.task_repository.mark_done_task(title, username)
+        if marked[0]:
+            TaskView.task_related_operations('marked', title + ' as done')
+        else:
+            TaskView.task_related_operations('marking', title+' as done', error=marked[1])

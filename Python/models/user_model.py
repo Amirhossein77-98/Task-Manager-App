@@ -94,3 +94,18 @@ class UserRepository:
             return None
         finally:
             cursor.close()
+
+    def check_duplicate(self, username):
+        connection = self._connection_manager.get_connection()
+        cursor = connection.cursor()
+        try:
+            cursor.execute("SELECT COUNT(*) FROM users WHERE username = %s", (username,))
+            result = cursor.fetchone()
+            if result[0] != 0:
+                return True
+            else:
+                return False
+        except Error as e:
+            UserView.user_operations_failure('checking username of', e)
+        finally:
+            cursor.close()

@@ -12,8 +12,14 @@ class UserController:
     def login_user(self, username, password):
         user = self.user_repository.login(username, password)
         UserView.display_login_result(user)
-        
         if user:
             return user
         else:
             return None
+        
+    def check_duplicate_username(self, username):
+        result = self.user_repository.check_duplicate(username)
+        if result:
+            return True
+        else:
+            return False
