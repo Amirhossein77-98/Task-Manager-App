@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import { UserRepository, UserRepositoryImpl } from "../repository/userRepository";
 import { UserView } from "../views/userView";
 
