@@ -21,5 +21,18 @@ class UserController {
             userView_1.UserView.displayMessage(res, `User ${username} registered successfully.`);
         });
     }
+    static login(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { username, password } = req.body;
+            const user = userRepository.findByUsernameAndPassword(username, password);
+            if (user) {
+                // @ts-ignore
+                userView_1.UserView.displayMessage(res, `Welcome ${user.username}!`);
+            }
+            else {
+                res.status(401).json({ message: `Login failed. Please check your username and password.` });
+            }
+        });
+    }
 }
 exports.UserController = UserController;

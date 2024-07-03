@@ -19,6 +19,7 @@ class UserRepositoryImpl {
     }
     findByUsernameAndPassword(username, password) {
         return __awaiter(this, void 0, void 0, function* () {
+            yield userModel_1.UserModel.findByUsernameAndPassword(username, password);
         });
     }
 }

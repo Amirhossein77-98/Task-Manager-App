@@ -1,5 +1,12 @@
 import { Database } from "../database/db";
 
+export interface User {
+    username: string;
+    password: string;
+    name: string;
+  }
+  
+
 export class UserModel {
     static async create(username:string, password:string, name:string): Promise<void> {
         const db = await Database.getInstance();
@@ -11,11 +18,12 @@ export class UserModel {
             PRIMARY KEY (username)
             );`);
         await db.execute("INSERT INTO users (username, password, name) VALUES (?, ?, ?)", [username, password, name]);
-    }
+    };
 
-    static async findByUsernameAndPassword(username: string, password: string): Promise<any> {
+    static async findByUsernameAndPassword(username: string, password: string): Promise<User | null> {
         const db = await Database.getInstance();
         const [rows] = await db.execute("SELECT * FROM users WHERE username = ? AND password = ?", [username, password]);
-        return rows[0];
-    }
+        const users = rows as User[]
+        return users.length > 0 ? users[0] : null;
+    };
 }

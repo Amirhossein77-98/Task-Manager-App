@@ -13,6 +13,7 @@ app.use((0, body_parser_1.json)());
 app.use(express_1.default.static('public'));
 // Routes
 app.post('/register', userController_1.UserController.register);
+app.post('/login', userController_1.UserController.login);
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });

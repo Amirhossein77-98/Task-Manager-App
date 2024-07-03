@@ -1,8 +1,8 @@
-import { UserModel } from "../models/userModel";
+import { UserModel, User } from "../models/userModel";
 
 export interface UserRepository {
     create(username:string, password:string, name:string): Promise<void>;
-    findByUsernameAndPassword(username:string, password:string): Promise<any>;
+    findByUsernameAndPassword(username:string, password:string): Promise<User | null>;
 }
 
 
@@ -11,7 +11,8 @@ export class UserRepositoryImpl implements UserRepository {
         await UserModel.create(username, password, name);
     }
 
-    async findByUsernameAndPassword(username: string, password: string): Promise<any> {
-        await UserModel.findByUsernameAndPassword(username, password)
+    async findByUsernameAndPassword(username: string, password: string): Promise<User | null> {
+        const user = await UserModel.findByUsernameAndPassword(username, password);
+        return user;
     }
 }

@@ -15,7 +15,22 @@ class UserModel {
     static create(username, password, name) {
         return __awaiter(this, void 0, void 0, function* () {
             const db = yield db_1.Database.getInstance();
+            yield db.execute(`CREATE TABLE IF NOT EXISTS users (
+            username VARCHAR(255) NOT NULL,
+            password VARCHAR(255) NOT NULL,
+            name VARCHAR(255) NOT NULL,
+            PRIMARY KEY (username)
+            );`);
             yield db.execute("INSERT INTO users (username, password, name) VALUES (?, ?, ?)", [username, password, name]);
+        });
+    }
+    static findByUsernameAndPassword(username, password) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const db = yield db_1.Database.getInstance();
+            const [rows] = yield db.execute("SELECT * FROM users WHERE username = ? AND password = ?", [username, password]);
+            console.log(rows);
+            // @ts-ignore
+            return rows[0];
         });
     }
 }
