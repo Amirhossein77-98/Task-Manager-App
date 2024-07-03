@@ -13,6 +13,7 @@ app.use(express.static('public'))
 // Routes
 
 app.post('/register', UserController.register);
+app.post('/login', UserController.login);
 
 
 app.listen(port, () => {

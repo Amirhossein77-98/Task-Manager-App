@@ -12,6 +12,6 @@ export class UserRepositoryImpl implements UserRepository {
     }
 
     async findByUsernameAndPassword(username: string, password: string): Promise<any> {
-        
+        await UserModel.findByUsernameAndPassword(username, password)
     }
 }

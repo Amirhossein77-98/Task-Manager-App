@@ -12,4 +12,10 @@ export class UserModel {
             );`);
         await db.execute("INSERT INTO users (username, password, name) VALUES (?, ?, ?)", [username, password, name]);
     }
+
+    static async findByUsernameAndPassword(username: string, password: string): Promise<any> {
+        const db = await Database.getInstance();
+        const [rows] = await db.execute("SELECT * FROM users WHERE username = ? AND password = ?", [username, password]);
+        return rows[0];
+    }
 }
