@@ -9,10 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserController = void 0;
+exports.UserController = exports.currentUser = void 0;
 const userRepository_1 = require("../repository/userRepository");
 const userView_1 = require("../views/userView");
-const userRepository = new userRepository_1.UserRepositoryImpl;
+const userRepository = new userRepository_1.UserRepositoryImpl();
 class UserController {
     static register(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -24,13 +24,14 @@ class UserController {
     static login(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { username, password } = req.body;
-            const user = userRepository.findByUsernameAndPassword(username, password);
+            const user = yield userRepository.findByUsernameAndPassword(username, password);
             if (user) {
-                // @ts-ignore
                 userView_1.UserView.displayMessage(res, `Welcome ${user.username}!`);
+                exports.currentUser = user;
             }
             else {
                 res.status(401).json({ message: `Login failed. Please check your username and password.` });
+                console.log(`Login failed. Please check your username and password.`);
             }
         });
     }

@@ -9,13 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TaskView = void 0;
-class TaskView {
-    static displayMessage(res, message) {
+exports.TaskRepository = void 0;
+const taskModel_1 = require("../models/taskModel");
+class TaskRepository {
+    static createNewTask(title, description, category, due_date, username) {
         return __awaiter(this, void 0, void 0, function* () {
-            res.json({ message });
-            console.log(message);
+            const createTaskResult = yield taskModel_1.TaskModel.createTask(title, description, category, due_date, username);
+            return createTaskResult;
         });
     }
 }
-exports.TaskView = TaskView;
+exports.TaskRepository = TaskRepository;

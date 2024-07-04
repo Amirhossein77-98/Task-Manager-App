@@ -24,14 +24,15 @@ class UserModel {
             yield db.execute("INSERT INTO users (username, password, name) VALUES (?, ?, ?)", [username, password, name]);
         });
     }
+    ;
     static findByUsernameAndPassword(username, password) {
         return __awaiter(this, void 0, void 0, function* () {
             const db = yield db_1.Database.getInstance();
             const [rows] = yield db.execute("SELECT * FROM users WHERE username = ? AND password = ?", [username, password]);
-            console.log(rows);
-            // @ts-ignore
-            return rows[0];
+            const users = rows;
+            return users.length > 0 ? users[0] : null;
         });
     }
+    ;
 }
 exports.UserModel = UserModel;

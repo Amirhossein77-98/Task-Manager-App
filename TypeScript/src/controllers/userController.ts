@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { UserRepository, UserRepositoryImpl } from "../repository/userRepository";
 import { UserView } from "../views/userView";
+import { User } from '../models/userModel';
+
 
 const userRepository: UserRepository = new UserRepositoryImpl();
 

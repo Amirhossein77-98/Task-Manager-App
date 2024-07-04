@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = require("body-parser");
 const userController_1 = require("./controllers/userController");
+const taskController_1 = require("./controllers/taskController");
 const app = (0, express_1.default)();
 const port = 3000;
 // Middlewares
@@ -14,6 +15,7 @@ app.use(express_1.default.static('public'));
 // Routes
 app.post('/register', userController_1.UserController.register);
 app.post('/login', userController_1.UserController.login);
+app.get('/newTask', taskController_1.TaskController.newTask);
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });

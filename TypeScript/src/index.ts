@@ -1,6 +1,7 @@
 import express from 'express';
 import {json} from 'body-parser';
 import { UserController } from './controllers/userController';
+import { TaskController } from './controllers/taskController';
 
 
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.static('public'))
 
 app.post('/register', UserController.register);
 app.post('/login', UserController.login);
+app.post('/newTask', TaskController.newTask)
 
 
 app.listen(port, () => {

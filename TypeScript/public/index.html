@@ -1,25 +1,34 @@
-<!Doctype html>
+<!DOCTYPE html>
 
 <html>
-<head>
-    <title>Home</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-    <h1>Welcome to the Task Manager App</h1>
-    <a href="login.html">Login</a>
-    <form id="register-form">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <br>
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
-        <br>
-        <button type="submit">Submit</button>
-    </form>
-    <script src="/js/main.js"></script>
-</body>
+    <head>
+        <title>Task Manager App Home Page</title>
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <h1>Welcome to the Task Manager App</h1>
+        <a href="register.html">Register</a>
+        <a href="login.html">Login</a>
+        
+        <h2>Create New Task: </h2>
+        <form id="new-task-form">
+            <label for="task-title">Title:</label>
+            <input type="text" id="task-title" name="task-title" required>
+            <br>
+            <label for="task-description">Description:</label>
+            <input type="text" id="task-description" name="task-description">
+            <br>
+            <label for="task-category">Category:</label>
+            <select id="task-category" name="task-category" required>
+                <option value="1">Urgent</option>
+                <option value="2">Important</option>
+            </select>
+            <br>
+            <label for="task-due-date">Due Date:</label>
+            <input type="date" id="task-due-date" name="task-due-date" required>
+            <br>
+            <button type="submit">Submit</button>
+        </form>
+        <script src="js/main.js"></script>
+    </body>
 </html>
