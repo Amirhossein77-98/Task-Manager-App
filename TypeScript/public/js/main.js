@@ -1,7 +1,38 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const registerForm = document.getElementById("register-form");
     const loginForm = document.getElementById("login-form");
-    const newTaskForm = document.getElementById("new-task-form")
+    const newTaskForm = document.getElementById("new-task-form");
+    const usersTasksForm = document.getElementById("users-tasks");
+
+    const currentUser = localStorage.getItem('authToken');
+
+    if (!currentUser && usersTasksForm) {
+        usersTasksForm.innerHTML = "<li>You should login first in order to load your tasks.</li>";
+    }
+
+    if (currentUser && usersTasksForm) {
+        try {
+            console.log("try");
+            const response = await fetch('/index', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${currentUser}`
+                }
+            });
+
+            if (response.ok) {
+                const tasks = await response.json();
+                usersTasksForm.innerHTML = tasks.map(task => `<li>${task.title}: ${task.status == 0? 'Done ✅' : 'Undone ❌'}</li>`).join('');
+            } else {
+                alert('Failed to load tasks');
+            }
+        } catch (error) {
+            console.error('Failed to fetch tasks:', error);
+            alert('You are not logged in');
+            usersTasksForm.innerHTML = "<li>You should login first in order to load your tasks.</li>";
+        }
+    }
 
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
@@ -15,10 +46,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({username, password, name}),
+                body: JSON.stringify({ username, password, name }),
             });
-        })
-    } else if (loginForm) {
+
+            if (response.ok) {
+                alert('Registration successful!');
+            } else {
+                alert('Registration failed!');
+            }
+        });
+    }
+
+    if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = e.target.username.value;
@@ -30,13 +69,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({username, password})
+                    body: JSON.stringify({ username, password })
                 });
 
                 if (response.ok) {
                     const data = await response.json();
                     localStorage.setItem('authToken', username);
-                    alert('Login Successfull!');
+                    alert('Login Successful!');
                 } else {
                     const error = await response.json();
                     alert(`Error: ${error.message}`);
@@ -44,9 +83,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error('Failed to login: ', error);
             }
+        });
+    }
 
-        })
-    } else if (newTaskForm) {
+    if (newTaskForm) {
         newTaskForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const title = document.getElementById("task-title").value;
@@ -60,8 +100,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({title, description, category, dueDate, user})
+                body: JSON.stringify({ title, description, category, dueDate, user })
             });
-        })
+
+            if (response.ok) {
+                alert('Task created successfully!');
+            } else {
+                alert('Task creation failed!');
+            }
+        });
     }
-})
+});

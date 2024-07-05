@@ -19,7 +19,15 @@ export class TaskController {
     }
 
     static async readTasks(req: Request, res: Response): Promise<void> {
-
+        const currentUser = req.headers['authorization'];
+        const userTasks = await TaskRepository.fetchUserTasks(currentUser as string);
+        if (userTasks) {
+            res.json(userTasks)
+        } else if (!userTasks) {
+            res.json('You have no tasks!')
+        } else if (userTasks !== undefined) {
+            res.json('There was a problem fetching your tasks')
+        }
     }
     
     static async updateTask(req: Request, res: Response): Promise<void> {

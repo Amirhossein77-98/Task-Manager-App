@@ -12,7 +12,7 @@ app.use(json())
 app.use(express.static('public'))
 
 // Routes
-
+app.get('/index', TaskController.readTasks);
 app.post('/register', UserController.register);
 app.post('/login', UserController.login);
 app.post('/newTask', TaskController.newTask)
