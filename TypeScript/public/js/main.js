@@ -17,16 +17,20 @@ document.addEventListener('DOMContentLoaded', async () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `${currentUser}`
+                    'authorization': `${currentUser}`
                 }
             });
 
             if (response.ok) {
                 const tasks = await response.json();
-                usersTasksForm.innerHTML = tasks.map(task => `
-                    <li>${task.title}: ${task.status == 0 ? 'Done ✅' : 'Undone ❌'}
-                    <button class="detail-button" id="${currentUser}-${task.id}" onclick="redirectToTaskDetailsPage(${task.id})">Details</button>
-                    </li>`).join('');
+                try {
+                    usersTasksForm.innerHTML = tasks.map(task => `
+                        <li>${task.title}: ${task.status == 0 ? 'Undone ❌' : 'Done ✅'}
+                        <button class="detail-button" id="${currentUser}-${task.id}" onclick="redirectToTaskDetailsPage(${task.id})">Details</button>
+                        </li>`).join('');    
+                } catch (error) {
+                    usersTasksForm.innerHTML = `<li>You have no tasks yet</li>`
+                }
             } else {
                 alert('Failed to load tasks');
             }
@@ -147,8 +151,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     } else if (span.id == "task-status") {
                         const select = document.createElement("select");
                         select.innerHTML = `
-                        <option value="0" ${span.textContent === "✅ Done" ? "selected" : ""}>✅ Done</option>
-                        <option value="1" ${span.textContent === "❌ Undone" ? "selected" : ""}>❌ Undone</option>
+                        <option value="0" ${span.textContent === "❌ Undone" ? "selected" : ""}>❌ Undone</option>
+                        <option value="1" ${span.textContent === "✅ Done" ? "selected" : ""}>✅ Done</option>
                         `;
                         select.id = span.id;
                         span.replaceWith(select);
@@ -221,7 +225,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <br>
             📅 <b>Due Date:</b> <span id="task-dueDate">${details.due_date.split("T")[0]}</span>
             <br>
-            ❔ <b>Status:</b> <span id="task-status">${details.status == 0 ? "✅ Done" : "❌ Undone"}</span>
+            ❔ <b>Status:</b> <span id="task-status">${details.status == 0 ? "❌ Undone" : "✅ Done"}</span>
             <br>
             <br>
             <button id="update-button" type="button">Update</button>
