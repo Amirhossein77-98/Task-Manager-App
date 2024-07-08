@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Task Manager App</title>
+        <link rel="stylesheet" href="css/style.css">
+    </head>
+    <body>
+        <h1>Update The Task</h1>
+        <form id="update-form">
+            <label for="update-task-title">Title:</label>
+            <input id="update-task-title" name="update-task-title">
+            <br>
+            <label for="update-task-description">Description:</label>
+            <input id="update-task-description" name="update-task-description">
+            <br>
+            <label for="update-task-category">Category:</label>
+            <select id="update-task-category" name="update-task-category">
+                <option value="1">Urgent</option>
+                <option value="2">Important</option>
+            </select>
+            <br>
+            <label for="update-task-due-date">Due Date:</label>
+            <input type="date" id="update-task-due-date" name="update-task-due-date">
+            <br>
+            <button type="submit">Submit</button>
+        </form>
+        <script src="/js/main.js"></script>
+    </body>
+</html>

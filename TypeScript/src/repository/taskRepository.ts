@@ -11,7 +11,25 @@ export class TaskRepository {
         if (userTasks !== undefined) {
             return userTasks ? userTasks : null;
         } else {
-            return undefined
+            return undefined;
+        }
+    }
+
+    static async fetchUserTaskById(taskId: number, userName: string) {
+        const userTask = await TaskModel.fetchTaskByTaskId(taskId, userName);
+        if (userTask !== undefined) {
+            return userTask ? userTask : null;
+        } else {
+            return undefined;
+        }
+    }
+
+    static async updateTask(taskId: number, taskTitle: string, taskDescription: string, taskCategory: number, taskDueDate: string, taskStatus: number, user: string): Promise<boolean> {
+        const result = await TaskModel.updateTask(taskId, taskTitle, taskDescription, taskCategory, taskDueDate, taskStatus, user)
+        if (result) {
+            return result
+        } else {
+            return result
         }
     }
 }

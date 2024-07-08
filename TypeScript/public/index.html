@@ -19,5 +19,11 @@
 
         <button id="new-task-button"><a href="newtask.html">New Task</a></button>
         <script src="/js/main.js"></script>
+        <script>
+            function redirectToTaskDetailsPage(taskId) {
+                localStorage.setItem("task-id", taskId)
+                window.location.href = "/taskDetails.html"
+            }
+        </script>
     </body>
 </html>

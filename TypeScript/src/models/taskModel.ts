@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Database } from "../database/db";
 import { format } from 'date-fns';
+import { error } from "console";
 
 export interface Task {
     id: number;
@@ -37,8 +38,33 @@ export class TaskModel {
         }
     }
 
-    static async updateTask(req: Request, res: Response): Promise<void> {
+    static async fetchTaskByTaskId(taskId: number, userName: string): Promise<Task | null | undefined> {
+        const db = await Database.getInstance();
+        try {
+            const [task] = await db.execute("SELECT * FROM tasks WHERE id = ? AND user = ?", [taskId, userName]);
+            const userTask = task as Task[];
+            return userTask.length > 0 ? userTask[0] : null;
+        } catch (error) {
+         return undefined   
+        }
+    }
 
+    static async updateTask(taskId: number, taskTitle: string, taskDescription: string, taskCategory: number, taskDueDate: string, taskStatus: number, user: string): Promise<boolean> {
+        const db = await Database.getInstance();
+        try {
+            db.execute(`UPDATE tasks SET title = ?, description = ?, category = ?, due_date = ?, status = ? WHERE user = ? and id = ?`, 
+                [taskTitle, 
+                    taskDescription, 
+                    taskCategory, 
+                    taskDueDate, 
+                    taskStatus, 
+                    user, 
+                    taskId]
+                )
+            return true
+        } catch (error) {
+            return false
+        }
     }
 
     static async deleteTask(req: Request, res: Response): Promise<void> {
