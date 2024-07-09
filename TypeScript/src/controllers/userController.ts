@@ -19,7 +19,6 @@ export class UserController {
             UserView.displayMessage(res, `Welcome ${user.username}!`);
         } else {
             res.status(401).json({message: `Login failed. Please check your username and password.`});
-            console.log(`Login failed. Please check your username and password.`)
         }
     }
 }

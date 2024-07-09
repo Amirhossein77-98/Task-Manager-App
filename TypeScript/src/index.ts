@@ -15,6 +15,7 @@ app.use(express.static('public'))
 app.get('/index', TaskController.readTasks);
 app.post('/taskDetails', TaskController.fetchUserTaskById)
 app.post('/taskUpdate', TaskController.updateTask)
+app.post('/deleteTask', TaskController.deleteTask)
 app.post('/register', UserController.register);
 app.post('/login', UserController.login);
 app.post('/newTask', TaskController.newTask)

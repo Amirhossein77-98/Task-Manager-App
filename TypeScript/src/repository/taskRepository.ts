@@ -32,4 +32,10 @@ export class TaskRepository {
             return result
         }
     }
+
+    static async deleteTask(taskId: number, userId: string): Promise<boolean> {
+        const result = await TaskModel.deleteTask(taskId, userId);
+        
+        return result ? true : false
+    }
 }

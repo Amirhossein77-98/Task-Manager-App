@@ -6,22 +6,29 @@
         <link rel="stylesheet" href="css/style.css">
     </head>
     <body>
-        <h1>Welcome to the Task Manager App</h1>
-        <a href="register.html">Register</a>
-        <a href="login.html">Login</a>
-
-        <h2>Your Tasks:</h2>
-        <div for="users-tasks">
-            <ul id="users-tasks" name="users-tasks">
-                <li><li>
-            </ul>
+        <div class="app">
+            <h1>📅 Taski, Your Task Manager App 📅</h1>
+            <hr>
+            <div id="user-section">
+                <button id="register-button"><a href="register.html">Register</a></button>
+                <button id="login-button"><a href="login.html">Login</a></button>
+            </div>
+            <hr>
+            <div id="user-task-section">
+                <h2>📃 Your Tasks:</h2>
+                <div for="users-tasks" id="tasks-section">
+                    <ul id="users-tasks" name="users-tasks">
+                        <li><li>
+                    </ul>
+                </div>
+            </div>
+            <br>
+            <button id="new-task-button"><a href="newtask.html">New Task</a></button>
         </div>
-
-        <button id="new-task-button"><a href="newtask.html">New Task</a></button>
         <script src="/js/main.js"></script>
         <script>
             function redirectToTaskDetailsPage(taskId) {
-                localStorage.setItem("task-id", taskId)
+                sessionStorage.setItem("task-id", taskId)
                 window.location.href = "/taskDetails.html"
             }
         </script>

@@ -3,7 +3,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     const loginForm = document.getElementById("login-form");
     const newTaskForm = document.getElementById("new-task-form");
     const usersTasksForm = document.getElementById("users-tasks");
-    const taskDetailField = document.getElementById("task-details")
+    const taskDetailField = document.getElementById("task-details");
+    const mainMenuButton = document.getElementById("main-menu");
+
+    if (mainMenuButton) {
+        mainMenuButton.addEventListener("click", (e) => {
+            if (sessionStorage.getItem("task-id")) {
+                sessionStorage.removeItem("task-id")
+            } else {}
+            window.location.href = "http://localhost:3000/"
+        });
+    }
     
     const currentUser = localStorage.getItem('authToken');
 
@@ -12,6 +22,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (currentUser && usersTasksForm) {
+        document.getElementById("user-section").innerHTML = `<span id="hi">👦 Hi ${currentUser}</span> <button id="logout-button" type="button">Logout</button>`
+        document.getElementById("user-section").addEventListener("click", (e) => {
+            localStorage.clear()
+            sessionStorage.clear()
+            window.location.reload()
+        });
+
         try {
             const response = await fetch('/index', {
                 method: 'GET',
@@ -25,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const tasks = await response.json();
                 try {
                     usersTasksForm.innerHTML = tasks.map(task => `
-                        <li>${task.title}: ${task.status == 0 ? 'Undone ❌' : 'Done ✅'}
+                        <li>📎 ${task.title}: ${task.status == 0 ? 'Undone ❌' : 'Done ✅'}
                         <button class="detail-button" id="${currentUser}-${task.id}" onclick="redirectToTaskDetailsPage(${task.id})">Details</button>
                         </li>`).join('');    
                 } catch (error) {
@@ -58,6 +75,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (response.ok) {
                 alert('Registration successful!');
+                localStorage.setItem("authToken", username)
+                window.location.href = "http://localhost:3000/"
             } else {
                 alert('Registration failed!');
             }
@@ -83,6 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const data = await response.json();
                     localStorage.setItem('authToken', username);
                     alert('Login Successful!');
+                    window.location.href = "http://localhost:3000/"
                 } else {
                     const error = await response.json();
                     alert(`Error: ${error.message}`);
@@ -112,6 +132,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (response.ok) {
                 alert('Task created successfully!');
+                const doAgain = confirm('Do you want to add another task?');
+                doAgain ? newTaskForm.reset() : window.location.href = "http://localhost:3000/";
             } else {
                 alert('Task creation failed!');
             }
@@ -119,7 +141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     if (taskDetailField) {
-        const taskId = localStorage.getItem('task-id');
+        const taskId = sessionStorage.getItem('task-id');
         const userId = localStorage.getItem('authToken');
         const response = await fetch('/TaskDetails', {
             method: 'POST',
@@ -170,24 +192,27 @@ document.addEventListener('DOMContentLoaded', async () => {
                 detailsDiv.appendChild(updateForm);
     
                 // Remove the previous button
-                const previousButton = document.getElementById("update-button");
-                if (previousButton) {
-                    previousButton.remove();
+                const taskUpdateButton = document.getElementById("update-button");
+                if (taskUpdateButton) {
+                    taskUpdateButton.remove();
+                }
+                const deleteButton = document.getElementById("delete-button");
+                if (deleteButton) {
+                    deleteButton.remove();
                 }
     
                 // Create a new submit button
                 const updateButton = document.createElement("button");
                 updateButton.innerText = "Submit";
                 updateButton.type = "submit";
-                updateButton.id = "update-button";
+                updateButton.id = "update-submit-button";
                 updateForm.appendChild(updateButton);
     
                 // Add the submit event listener to the form
                 updateForm.addEventListener("submit", async (e) => {
                     e.preventDefault();
-                    console.log("clicked");
     
-                    const taskId = localStorage.getItem("task-id");
+                    const taskId = sessionStorage.getItem("task-id");
                     const title = document.getElementById("task-title").value;
                     const description = document.getElementById("task-description").value;
                     const category = document.getElementById("task-category").value;
@@ -212,6 +237,32 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 });
             }
+
+            async function deleteTask() {
+                const confirmation = confirm("Are you sure you want to delete this task?");
+
+                if (confirmation) {
+                    const response = await fetch("/deleteTask", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ taskId, userId })
+                    });
+    
+                    if (response.ok) {
+                        alert("Task deleted successfully")
+                        sessionStorage.removeItem("task-id")
+                        window.location.href = 'http://localhost:3000/'
+                    } else {
+                        alert("Failed to delete the task")
+                    }
+                } else {
+                    alert("Ok, let's keep it")
+                }
+
+
+            }
     
             const details = await response.json();
     
@@ -228,12 +279,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             ❔ <b>Status:</b> <span id="task-status">${details.status == 0 ? "❌ Undone" : "✅ Done"}</span>
             <br>
             <br>
-            <button id="update-button" type="button">Update</button>
+            <div id="task-details-buttons">
+                <button id="update-button" type="button">Update</button>
+                <button id="delete-button" type="button">Delete</button>
+            </div>
             `;
             document.getElementById("update-button").addEventListener("click", convertSpansToFields);
-            console.log("came Back");
-        }
-    }
+            document.getElementById("delete-button").addEventListener("click", deleteTask);
+        };
+    };
     
     
 });

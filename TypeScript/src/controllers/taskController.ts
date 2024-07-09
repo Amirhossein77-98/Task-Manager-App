@@ -10,7 +10,6 @@ export class TaskController {
             if (createTaskResult) {
                 TaskView.displayMessage(res, 'Task created successfully.')
             } else {
-                console.log(createTaskResult)
                 TaskView.displayMessage(res, 'Task creation failed.')
             }
         } else {
@@ -63,7 +62,16 @@ export class TaskController {
     }
     
     static async deleteTask(req: Request, res: Response): Promise<void> {
+        const taskId = req.body.taskId;
+        const userId = req.body.userId;
 
+        const result = await TaskRepository.deleteTask(taskId, userId);
+
+        if (result) {
+            res.status(200).send();
+        } else {
+            res.status(400).send();
+        }
     }
 
 }

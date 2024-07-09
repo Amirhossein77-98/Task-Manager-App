@@ -16,13 +16,11 @@ export interface Task {
 export class TaskModel {
     static async createTask(title: string, description: string, category: number, dueDate: string, user: string): Promise<boolean> {
         const formattedDate = format(dueDate, 'yyy-MM-dd');
-        console.log(typeof(dueDate));
         const db = await Database.getInstance();
         try {
             await db.execute("INSERT INTO tasks (title, description, category, due_date, user) VALUES (?, ?, ?, ?, ?)", [title, description, category, formattedDate, user]);
             return true
         } catch (error) {
-            console.log(error)
             return false
         }
     }
@@ -67,7 +65,13 @@ export class TaskModel {
         }
     }
 
-    static async deleteTask(req: Request, res: Response): Promise<void> {
-
+    static async deleteTask(taskId: number, userId: string): Promise<boolean> {
+        const db = await Database.getInstance();
+        try {
+            db.execute("DELETE FROM tasks WHERE id = ? AND user = ?", [taskId, userId]);
+            return true
+        } catch (error) {
+            return false
+        }
     }
 }
