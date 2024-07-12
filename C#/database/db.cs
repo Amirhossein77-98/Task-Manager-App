@@ -5,13 +5,18 @@ using TaskManagerApp.Models;
 
 namespace TaskManagerApp.Database
 {
-    public class AppDbContext(IConfiguration configuration) : DbContext
+    public class AppDbContext : DbContext
     {
-        protected readonly IConfiguration Configuration = configuration;
+        protected readonly IConfiguration _configuration;
+
+        public AppDbContext(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var connectionString = Configuration.GetConnectionString("TaskManagerDatabase");
+            var connectionString = _configuration.GetConnectionString("TaskManagerDatabase");
             optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
             base.OnConfiguring(optionsBuilder);
         }
@@ -19,5 +24,25 @@ namespace TaskManagerApp.Database
         public DbSet<Users> users { get; set; }
         public DbSet<Tasks> tasks { get; set; }
 
+    }
+
+    public class DBContextSingleton
+    {
+        private static AppDbContext? _instance;
+        private static readonly object _lock = new object();
+
+        private DBContextSingleton() { }
+
+        public static AppDbContext GetInstance(IConfiguration configuration)
+        {
+            lock (_lock)
+            {
+                if (_instance == null)
+                {
+                    _instance = new AppDbContext(configuration);
+                }
+            }
+            return _instance;
+        }
     }
 }
