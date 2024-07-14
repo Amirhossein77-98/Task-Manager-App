@@ -1,18 +1,13 @@
-using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using TaskManagerApp.Models;
 
 namespace TaskManagerApp.Database
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext(IConfiguration configuration) : DbContext
     {
-        protected readonly IConfiguration _configuration;
-
-        public AppDbContext(IConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
+        protected readonly IConfiguration _configuration = configuration;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -21,8 +16,8 @@ namespace TaskManagerApp.Database
             base.OnConfiguring(optionsBuilder);
         }
 
-        public DbSet<Users> users { get; set; }
-        public DbSet<Tasks> tasks { get; set; }
+        public DbSet<Users> Users { get; set; }
+        public DbSet<Tasks> Tasks { get; set; }
 
     }
 
@@ -37,10 +32,7 @@ namespace TaskManagerApp.Database
         {
             lock (_lock)
             {
-                if (_instance == null)
-                {
-                    _instance = new AppDbContext(configuration);
-                }
+                _instance ??= new AppDbContext(configuration);
             }
             return _instance;
         }
