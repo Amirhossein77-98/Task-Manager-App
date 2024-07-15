@@ -12,7 +12,7 @@ namespace TaskManagerApp
     {
         public static void Main(string[] args)
         {
-            string user = "";
+            string? user = null;
 
             // Build configuration
             var builder = new ConfigurationBuilder()
@@ -176,7 +176,7 @@ Choose the operation you want:");
                 }
             }
 
-            while (user == "")
+            while (user == null)
             {
 
                 Console.WriteLine(@"Hi. In order to use the app you should register or login to your account first.
@@ -204,7 +204,7 @@ Choose what you want to do:
             {
                 Console.WriteLine();
                 Console.WriteLine("Here are your tasks: ");
-                ICollection<Tasks> tasks = Controllers.TaskController.FetchUsersTasksByUsername(user, context);
+                ICollection<Tasks> tasks = Controllers.TaskController.FetchUsersTasksByUsername(user!, context);
                 if (tasks.Count == 0)
                 {
                     Console.WriteLine("- You have no tasks yet.");
@@ -214,7 +214,12 @@ Choose what you want to do:
                     int index = 1;
                     foreach (var task in tasks)
                     {
-                        Console.WriteLine(index + ". " + task.Title);
+                        string taskStatus = "Undone";
+                        if (task.Status == 1)
+                        {
+                            taskStatus = "Done";
+                        }
+                        Console.WriteLine(index + ". " + task.Title + ": " + taskStatus);
                         index++;
                     }
                 }
@@ -239,7 +244,6 @@ Choose what you want to do:
                             title = newTitle!;
                             break;
                         }
-
 
                     }
 
@@ -281,32 +285,219 @@ Choose what you want to do:
                     }
 
                     string status = "0";
-                    Controllers.TaskController.AddNewTaskForTheUser(title, description!, category!, dueDate, status, user, context);
+                    Controllers.TaskController.AddNewTaskForTheUser(title, description!, category!, dueDate, status, user!, context);
 
                 }
                 else if (userChoice == "2")
                 {
+                    while (true)
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("Please enter the task title you want: ");
+                        string? taskTitle = Console.ReadLine();
+                        Tasks? taskDetails = null;
+                        foreach (var task in tasks)
+                        {
+                            if (taskTitle == task.Title)
+                            {
+                                taskDetails = Controllers.TaskController.RequestTaskDetailsByTitle(taskTitle!, user!, context);
+                            }
+                        }
+
+                        if (taskDetails != null)
+                        {
+                            Console.WriteLine("Here is your task's details: ");
+                            Console.WriteLine($"Title: {taskDetails.Title}");
+                            Console.WriteLine($"Description: {taskDetails.Description}");
+                            Console.WriteLine($"Category: {(taskDetails.Category == 1 ? "Urgent" : "Important")}");
+                            Console.WriteLine($"Due Date: {taskDetails.DueDate}");
+                            Console.WriteLine($"Status: {(taskDetails.Status == 0 ? "Undone" : "Done")}");
+                        }
+                        else
+                        {
+                            Console.WriteLine("There is no matching title. Please consider to enter an existing title.");
+                            continue;
+                        }
+                    }
 
                 }
                 else if (userChoice == "3")
                 {
+                    while (true)
+                    {
+                        Console.WriteLine();
+                        Console.WriteLine("Please choose the task title you want to update: ");
+                        string? taskTitle = Console.ReadLine();
+                        Tasks? taskDetails = null;
+                        foreach (var task in tasks)
+                        {
+                            if (taskTitle == task.Title)
+                            {
+                                taskDetails = Controllers.TaskController.RequestTaskDetailsByTitle(taskTitle!, user!, context);
+                            }
+                        }
+
+                        if (taskDetails != null)
+                        {
+                            Console.WriteLine("Here is your task's details: ");
+                            Console.WriteLine($"Title: {taskDetails.Title}");
+                            Console.WriteLine($"Description: {taskDetails.Description}");
+                            Console.WriteLine($"Category: {(taskDetails.Category == 1 ? "Urgent" : "Important")}");
+                            Console.WriteLine($"Due Date: {taskDetails.DueDate}");
+                            Console.WriteLine($"Status: {(taskDetails.Status == 0 ? "Undone" : "Done")}");
+
+                            string title = "";
+                            while (true)
+                            {
+                                Console.WriteLine("Enter the new title (Leave blank for default): ");
+                                string? newTitle = Console.ReadLine();
+                                if (newTitle == "")
+                                {
+                                    title = taskDetails.Title!;
+                                    break;
+                                }
+                                else
+                                {
+                                    title = newTitle!;
+                                    break;
+                                }
+
+                            }
+
+                            Console.WriteLine("Enter the new description (Leave blank for default): ");
+                            string? description = Console.ReadLine();
+
+                            if (description == "")
+                            {
+                                description = taskDetails.Description;
+                            }
+
+                            Console.WriteLine(@"Enter the category number you want
+1. Urgent
+2. Important
+:");
+                            string? category = Console.ReadLine();
+                            if (category == "")
+                            {
+                                category = taskDetails.Category.ToString();
+                            }
+
+                            string dueDate = "";
+                            while (true)
+                            {
+                                Console.WriteLine("Please enter a date (YYYY-MM-dd): ");
+                                string newDueDate = Console.ReadLine()!;
+                                if (newDueDate == "")
+                                {
+                                    dueDate = taskDetails.DueDate.ToString();
+                                }
+                                else
+                                {
+                                    try
+                                    {
+                                        DateTime.Parse(newDueDate);
+                                        dueDate = newDueDate;
+                                        break;
+                                    }
+                                    catch (System.Exception)
+                                    {
+                                        Console.WriteLine("Not a valid format!");
+                                    }
+                                }
+                            }
+
+                            Console.WriteLine(@"Choose the staus (Leave blank to keep it unchanged):
+                            0 = Undone
+                            1 = Done:");
+                            string? newStatus = Console.ReadLine();
+                            if (newStatus == "")
+                            {
+                                newStatus = taskDetails.Status.ToString();
+                            }
+                            Controllers.TaskController.UpdateUsersTaskByTitle(title, description!, category!, dueDate, newStatus!, user!, taskDetails.Title!, context);
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("There is no matching title. Please consider to enter an existing title.");
+                            continue;
+                        }
+                    }
 
                 }
                 else if (userChoice == "4")
                 {
+                    Console.WriteLine();
+                    Console.WriteLine("Please enter the task title you want to delete: ");
+                    string? taskTitle = Console.ReadLine();
+                    Tasks? taskDetails = null;
+                    foreach (var task in tasks)
+                    {
+                        if (taskTitle == task.Title)
+                        {
+                            taskDetails = Controllers.TaskController.RequestTaskDetailsByTitle(taskTitle!, user!, context);
+                        }
+                    }
+
+                    if (taskDetails != null)
+                    {
+                        Console.WriteLine("Here is your task's details: ");
+                        Console.WriteLine($"Title: {taskDetails.Title}");
+                        Console.WriteLine($"Description: {taskDetails.Description}");
+                        Console.WriteLine($"Category: {(taskDetails.Category == 1 ? "Urgent" : "Important")}");
+                        Console.WriteLine($"Due Date: {taskDetails.DueDate}");
+                        Console.WriteLine($"Status: {(taskDetails.Status == 0 ? "Undone" : "Done")}");
+                        Console.WriteLine();
+                        Console.WriteLine("Are you sure you want to delete this task (y/n)? ");
+                        string? confirm = Console.ReadLine();
+
+                        if (confirm!.ToLower() == "y")
+                        {
+                            Controllers.TaskController.DeleteTaskByTitle(taskDetails.Title!, user!, context);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Ok, deletion Cancelled!");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("There is no matching title. Please consider to enter an existing title.");
+                        continue;
+                    }
 
                 }
                 else if (userChoice == "5")
                 {
+                    Console.WriteLine();
+                    Console.WriteLine("Please enter the task title you want to delete: ");
+                    string? taskTitle = Console.ReadLine();
+                    Tasks? taskDetails = null;
+                    foreach (var task in tasks)
+                    {
+                        if (taskTitle == task.Title)
+                        {
+                            taskDetails = Controllers.TaskController.RequestTaskDetailsByTitle(taskTitle!, user!, context);
+                        }
+                    }
 
+                    if (taskDetails != null)
+                    {
+                        Controllers.TaskController.MarkTaskAsDoneByTitle(taskDetails.Title!, user!, context);
+                    }
+                    else
+                    {
+                        Console.WriteLine("There is no matching title. Please consider to enter an existing title.");
+                        continue;
+                    }
                 }
                 else if (userChoice == "6")
                 {
-
+                    user = null;
                 }
                 else if (userChoice == "7")
                 {
-
+                    break;
                 }
                 else
                 {

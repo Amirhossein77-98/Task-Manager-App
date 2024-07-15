@@ -71,5 +71,61 @@ namespace TaskManagerApp.Models
                 throw;
             }
         }
+
+        public static Tasks FetchTaskByTitle(string title, string user, AppDbContext context)
+        {
+            Tasks task = context.Tasks.Single(e => e.Title == title && e.User == user);
+            return task;
+        }
+
+        public static bool UpdateTaskByTitle(string title, string description, string category, string dueDate, string status, string user, string prevTitle, AppDbContext context)
+        {
+            try
+            {
+                var task = context.Tasks.Single(e => e.Title == prevTitle && e.User == user);
+                task.Title = title;
+                task.Description = description;
+                task.Category = int.Parse(category);
+                task.DueDate = DateTime.Parse(dueDate);
+                task.Status = int.Parse(status);
+                context.SaveChanges();
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
+        }
+
+        public static bool DeleteTaskByTitle(string title, string user, AppDbContext context)
+        {
+            var task = context.Tasks.Single(e => e.Title == title && e.User == user);
+            if (task != null)
+            {
+                context.Tasks.Remove(task);
+                context.SaveChanges();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool MarkDone(string title, string user, AppDbContext context)
+        {
+            try
+            {
+                var task = context.Tasks.Single(e => e.Title == title && e.User == user);
+                task.Status = 1;
+                context.SaveChanges();
+                return true;
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
+        }
     }
 }
