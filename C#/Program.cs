@@ -1,5 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Net;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic;
 using TaskManagerApp.Database;
 using TaskManagerApp.Models;
 
@@ -151,7 +154,7 @@ namespace TaskManagerApp
                 while (true)
                 {
 
-                    Console.WriteLine(@"📃 Main Menu:
+                    Console.WriteLine(@"Main Menu:
 1. New Task
 2. View Task Detail
 3. Update Task
@@ -199,12 +202,116 @@ Choose what you want to do:
 
             while (true)
             {
+                Console.WriteLine();
+                Console.WriteLine("Here are your tasks: ");
                 ICollection<Tasks> tasks = Controllers.TaskController.FetchUsersTasksByUsername(user, context);
-                foreach (var task in tasks)
+                if (tasks.Count == 0)
                 {
-                    Console.WriteLine(task.Title);
+                    Console.WriteLine("- You have no tasks yet.");
                 }
-                Menu(context);
+                else
+                {
+                    int index = 1;
+                    foreach (var task in tasks)
+                    {
+                        Console.WriteLine(index + ". " + task.Title);
+                        index++;
+                    }
+                }
+                string userChoice = Menu(context);
+
+                if (userChoice == "1")
+                {
+                    Console.WriteLine("Let's create a new task!");
+
+                    string title = "";
+                    while (true)
+                    {
+                        Console.WriteLine("Enter the title: ");
+                        string? newTitle = Console.ReadLine();
+                        if (newTitle == "")
+                        {
+                            Console.WriteLine("You should enter a title!");
+                            continue;
+                        }
+                        else
+                        {
+                            title = newTitle!;
+                            break;
+                        }
+
+
+                    }
+
+                    Console.WriteLine("Enter the description: ");
+                    string? description = Console.ReadLine();
+
+                    Console.WriteLine(@"Enter the category number you want
+                    1. Urgent
+                    2. Important
+                    :");
+                    string? category = Console.ReadLine();
+                    if (category == "")
+                    {
+                        category = "1";
+                    }
+
+                    string dueDate = "";
+                    while (true)
+                    {
+                        Console.WriteLine("Please enter a date (YYYY-MM-dd): ");
+                        string newDueDate = Console.ReadLine()!;
+                        if (newDueDate == "")
+                        {
+                            dueDate = DateTime.Today.ToString();
+                        }
+                        else
+                        {
+                            try
+                            {
+                                DateTime.Parse(newDueDate);
+                                dueDate = newDueDate;
+                                break;
+                            }
+                            catch (System.Exception)
+                            {
+                                Console.WriteLine("Not a valid format!");
+                            }
+                        }
+                    }
+
+                    string status = "0";
+                    Controllers.TaskController.AddNewTaskForTheUser(title, description!, category!, dueDate, status, user, context);
+
+                }
+                else if (userChoice == "2")
+                {
+
+                }
+                else if (userChoice == "3")
+                {
+
+                }
+                else if (userChoice == "4")
+                {
+
+                }
+                else if (userChoice == "5")
+                {
+
+                }
+                else if (userChoice == "6")
+                {
+
+                }
+                else if (userChoice == "7")
+                {
+
+                }
+                else
+                {
+
+                }
             }
 
         }

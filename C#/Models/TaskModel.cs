@@ -18,6 +18,9 @@ namespace TaskManagerApp.Models
         [Column("description")]
         public string? Description { get; set; }
 
+        [Column("category")]
+        public int? Category { get; set; }
+
         [Column("due_date")]
         public DateTime DueDate { get; set; }
 
@@ -40,6 +43,31 @@ namespace TaskManagerApp.Models
             catch (System.Exception)
             {
 
+                throw;
+            }
+        }
+
+        public static bool AddNewTask(string title, string description, string category, string dueDate, string status, string user, AppDbContext context)
+        {
+            Tasks task = new()
+            {
+                Title = title,
+                Description = description,
+                Category = int.Parse(category),
+                DueDate = DateTime.Parse(dueDate),
+                Status = int.Parse(status),
+                User = user
+            };
+
+            try
+            {
+                context.Tasks.Add(task);
+                context.SaveChanges();
+                return true;
+            }
+            catch (System.Exception)
+            {
+                return false;
                 throw;
             }
         }
