@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TaskManagerApp.Database;
 
 namespace TaskManagerApp.Models
 {
@@ -25,5 +26,22 @@ namespace TaskManagerApp.Models
 
         [Column("status")]
         public int? Status { get; set; }
+    }
+
+    public class TaskModel
+    {
+        public static ICollection<Tasks> FetchTasks(string username, AppDbContext context)
+        {
+            try
+            {
+                ICollection<Tasks> usersTasks = [.. context.Tasks.Where(e => e.User == username)];
+                return usersTasks;
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
